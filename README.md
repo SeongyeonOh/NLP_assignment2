@@ -1,6 +1,6 @@
 # NLP_assignment2
 
-<Encoder>
+## Encoder
  
 Encoder는 전체 소스 문장 X를 압축하지 않고 sequence Z로 만든다. 이때 Z 는 기존의 RNN 모델과 달리 현재 시점 t 이전의 토큰들의 정보를 가지는 것이 아닌 문장 X 전체의 정보를 담고 있다는 차이를 가진다.
 
@@ -22,6 +22,6 @@ encoder layer로 들어온 combined 벡터는
 
 그리고 위와 같은 encoder layer를 N번 더 거쳐 최종 Z를 계산한다.
 
-<Decoder>
+## Decoder
 
 Decoder는 Encoder를 거쳐서 나온 
