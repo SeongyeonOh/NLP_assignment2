@@ -24,4 +24,8 @@ encoder layer로 들어온 combined 벡터는
 
 ## Decoder
 
-Decoder는 Encoder를 거쳐서 나온 
+Decoder는 Encoder를 거쳐서 나온 Z를 decoding 하여 확률분포를 계산해 높은 확률로 나타나는 토큰들을 output 한다.
+
+Decoder의 첫 부분에는 output embedding과 positional encoding을 거치고 이후에 decoder layer로 들어간다.
+
+delcoder layter는
