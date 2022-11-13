@@ -35,9 +35,16 @@ encoder layer로 들어온 combined 벡터는
  위의 Attention과정을 자기 자신에게 수행한다. 즉, Q, K, V(셋다 동일)가 입력 문장의 모든 단어 토큰들을 의미한다.
 
 - Transformer
+ 
+ Transformer Encoder에 Self Attention을 적용하는 과정은 아래와 같다.
+ 1. Q, K, V에 가중치 W를 곱해 head와 같은 차원의 Q, K, V를 얻는다.
+ 2. 1에서 가중치를 곱해서 얻은 Q, K, V로 scaled dot product attention을 한다. scaled dot product attention이란 dot product한 값이 너무 커져 gradient가 작아지는 것을 막기 위해 사용하는 방법이다. 아래의 이미지는 scaled dot product attention을 수식으로 표현한 것이다.
+![image](https://user-images.githubusercontent.com/48917098/201504506-9b876745-3319-4220-8a3d-d6d12d523d2d.png)
+ 3. 2의 과정은 head의 갯수만큼 진행되며 그 결과로 head의 수만큼의 attention matrix를 얻는다. 
+ 4. 모든 attention matrix를 concat한 뒤, 가중치 W를 곱해 최종 Multi head attention score를 얻는다.
 
+### Position-wise Feedforward Layer
 
-### 
 
 ## Decoder
 
