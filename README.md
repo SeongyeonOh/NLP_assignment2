@@ -44,6 +44,9 @@ encoder layer로 들어온 combined 벡터는
  4. 모든 attention matrix를 concat한 뒤, 가중치 W를 곱해 최종 Multi head attention score를 얻는다.
 
 ### Position-wise Feedforward Layer
+ - hid_dim 을 pf_dim 크기로 바꿨다가(fc_1) 다시 hid_dim 크기로 만드는(fc_2) 2개의 linear layer이다.
+ - 이때, pf_dim은 일반적으로 hid_dim보다 크다. 논문에서는 pf_dim=2048, hid_dim=512로 설정했다.
+ - fc_1을 지나며 activation layer(relu)와 dropout이 적용된다.
 
 
 ## Decoder
@@ -51,5 +54,41 @@ encoder layer로 들어온 combined 벡터는
 Decoder는 Encoder를 거쳐서 나온 Z를 decoding 하여 확률분포를 계산해 높은 확률로 나타나는 토큰들을 output 한다.
 
 Decoder의 첫 부분에는 output embedding과 positional encoding을 거치고 이후에 decoder layer로 들어간다.
+- output embedding은 token embedding으로 vocab에 있는 토큰으로 벡터를 만들어준다.
+- position embedding은 최대 길이의 문장만큼 존재하며 위의 output embedding의 output과 element-wise sum을 거쳐 하나의 vector로 출력된다.
 
-delcoder layter는
+Decoder layer에는 2개의 Multi-head attention layer와 1개의 Linear layer가 존재한다.
+- 첫번째 Multi-head attention layer는 input인 trg 시퀀스에 대해 masked self attention을 진행한다.
+- 두번째 Multi-head attention layer는 첫번째 decoder의 output을 Q로 사용하고, encoder의 src_output을 K, V로 사용해 self-attention을 진행한다. 
+- 마지막으로 Linear layer를 거쳐 최종 output의 크기를 hidden_dim에서 output_dim으로 맞춘다.
+
+### Delcoder layter
+
+위에서 언급한대로 2개의 Multi-head attention layer와 1개의 Linear layer가 존재한다. 각 layer를 편의상 아래와 같이 표시하겠다.
+ 1. Self-attention layer
+ 2. Encoder-attention layer
+ 3. Position-wise feedforward layer
+
+- Self-attention layer
+  Decoder representation 사이의 self-attention을 의미한다. 이 과정은 Encoder의 self-atteintion과 비슷하나 target sequence masking이 사용된다는 점에서 차이가 있다. 이는 Decoder가 다음 단어를 예측하는 시점에 미래의 단어(정답)를 보지 못하도록 만들기 위해서 masking을 사용한다. masking을 해야 하는 부분에 음의 무한대에 가까운 음수를 더해 softmax과정을 거치면 0이 되게 만들어 attention 연산이 일어나지 않도록 만든다.
+  
+- Encoder-attention layer
+  이 layer에서는 이전 decoder의 output을 Q로 사용하고, encoder의 src_output을 K, V로 사용해 self-attention을 진행한다. 여기서도 이전 layer와 마찬가지로 src_mask가 사용된다.
+- Position-wise feedforward layer
+  Encoder의 fc_layer와 동일하게 진행된다.
+  
+  
+## Seq2Seq
+Encoder와 Decoder가 함께 구현(연결)되어 있고, mask를 생성하는 부분이 포함되어 있는 형태이다.
+
+source mask란 <pad> 토큰이 아닐 때는 1이고, <pad> 토큰일 때는 0이다. unsqueeze가 되는 이유는 energy와 계산 되는 과정에서 올바르게 broadcast 되게 하기 위해서 이다.
+
+target mask란 우선 source mask처럼 <pad>토큰을 생성한다. 그리고 torch.tril을 이용해 "subsequent"마스크를 생성하는데 이는 아래 이미지처럼 대각선의 우측 상단이 모두 0인 행렬이 만들어진다. 이런 형태의 행렬은 input과 관계없이 우측 상단이 모두 0인 행렬을 만들어 마스킹을 할 수 있다.
+
+![image](https://user-images.githubusercontent.com/48917098/201505777-98f28aac-1fd0-4e79-85c7-1c7c6f17b808.png)
+
+이후에 패딩 마스크가 함께 결합되면 최종적으로 아래와 같은 형태의 마스킹 행렬이 만들어진다.
+
+![image](https://user-images.githubusercontent.com/48917098/201505791-47e225f0-95ab-4508-aa4e-62295d4e8811.png)
+ 
+이렇게 생성된 mask는 Encoder Decoder에세 예측 대상 문장의 output을 얻기 위해 src sentence와 trg sentence에 적용되어 사용된다.
