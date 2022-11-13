@@ -11,6 +11,8 @@ Encoder는 전체 소스 문장 X를 압축하지 않고 sequence Z로 만든다
 
 이후 이렇게 만들어진 combined 벡터는 본격적으로 encoder layer에 들어간다.
 
+### Encoder Layer
+
 encoder layer로 들어온 combined 벡터는 
 1. Multi-head attention
 2. dropout, residual connection, Layer Normalization layer
@@ -21,6 +23,21 @@ encoder layer로 들어온 combined 벡터는
 이때, multi-head attention 과정에서 self-attention을 적용한다. 이 과정은 이후 자세히 서술하겠다.
 
 그리고 위와 같은 encoder layer를 N번 더 거쳐 최종 Z를 계산한다.
+
+### Multi Head Attention Layer
+
+- Attention
+ 1. 어텐션 함수는 Query에 대해 모든 Key 값의 유사도(attention score)를 구하고
+ 2. 유사도를 가중치로 (softmax) Key 와 맵핑된 각각의 Value에 반영한다.
+ 3. 이후 이 Value를 모두 가중합 해서 Attention Value를 반환한다.
+
+- Self Attention
+ 위의 Attention과정을 자기 자신에게 수행한다. 즉, Q, K, V(셋다 동일)가 입력 문장의 모든 단어 토큰들을 의미한다.
+
+- Transformer
+
+
+### 
 
 ## Decoder
 
