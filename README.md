@@ -41,6 +41,7 @@ encoder layer로 들어온 combined 벡터는
  2. 1에서 가중치를 곱해서 얻은 Q, K, V로 scaled dot product attention을 한다. scaled dot product attention이란 dot product한 값이 너무 커져 gradient가 작아지는 것을 막기 위해 사용하는 방법이다. 아래의 이미지는 scaled dot product attention을 수식으로 표현한 것이다.
  
 ![image](https://user-images.githubusercontent.com/48917098/201506139-bf9cb262-b219-42bf-9e0e-da65ee54c43d.png)
+
  3. 2의 과정은 head의 갯수만큼 진행되며 그 결과로 head의 수만큼의 attention matrix를 얻는다. 
  4. 모든 attention matrix를 concat한 뒤, 가중치 W를 곱해 최종 Multi head attention score를 얻는다.
 
